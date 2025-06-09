@@ -1,8 +1,13 @@
+import 'package:flutter/material.dart';
 class CategoryDM {
   final String id;
   final String name;
-  final String iconPath;
+  final IconData icon;
+  final String? imagePath;
 
-  const CategoryDM(
-      {required this.id, required this.name, required this.iconPath});
+  CategoryDM(
+      {required this.id,
+        required this.name,
+        required this.icon,
+        this.imagePath});
 }

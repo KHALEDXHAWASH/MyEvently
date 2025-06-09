@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class CustomTab extends StatelessWidget {
   const CustomTab(
       {super.key,
-      required this.category,
-      required this.isSelected,
-      required this.selectedTabBg,
-      required this.unselectedTabBg,
-      required this.selectedLabelColor,
-      required this.unSelectedLabelColor});
+        required this.category,
+        required this.isSelected,
+        required this.selectedTabBg,
+        required this.unselectedTabBg,
+        required this.selectedLabelColor,
+        required this.unSelectedLabelColor});
 
   final CategoryDM category;
   final bool isSelected;
@@ -31,11 +30,9 @@ class CustomTab extends StatelessWidget {
           border: Border.all(color: selectedTabBg, width: 1.w)),
       child: Row(
         children: [
-          SvgPicture.asset(
-            category.iconPath,
-            colorFilter: ColorFilter.mode(
-                isSelected ? selectedLabelColor : unSelectedLabelColor,
-                BlendMode.srcIn),
+          Icon(
+            category.icon,
+            color: isSelected ? selectedLabelColor : unSelectedLabelColor,
           ),
           SizedBox(
             width: 8.w,

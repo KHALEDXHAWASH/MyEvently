@@ -21,7 +21,7 @@ class CustomEventWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(width: 1.w, color: ColorsManager.blue),
         image: DecorationImage(
-            fit: BoxFit.fill, image: AssetImage(ImageAssets.base)),
+            fit: BoxFit.fill, image: AssetImage(event.category.imagePath!)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

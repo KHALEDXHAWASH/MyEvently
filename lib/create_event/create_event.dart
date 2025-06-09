@@ -61,7 +61,7 @@ class _CreateEventState extends State<CreateEvent> {
               ClipRRect(
                   clipBehavior: Clip.hardEdge,
                   borderRadius: BorderRadius.circular(18.r),
-                  child: Image.asset(ImageAssets.meeting)),
+                  child: Image.asset(selectedCategory.imagePath!)),
               CustomTabBar(
                 oncategorytabclick:oncategoryclick ,
                 categories: ConstantManager.categoriesWithoutAll,
@@ -127,15 +127,23 @@ class _CreateEventState extends State<CreateEvent> {
       selectedCategory = category;
     });
   }
- void _createevent ()async
- {
-   EventDM event= EventDM(
-       title:titlecontroller.text,
-       description:descontroller.text,
-       dateTime:selectedDate.copyWith(hour:selectedTime.hour ,minute:selectedTime.minute ),
-       category: selectedCategory);
-   await fbservices.addeventtofb(event);
- }
+  void _createevent() async {
+    try {
+      EventDM event = EventDM(
+        category: selectedCategory,
+        title: titlecontroller.text,
+        description: descontroller.text,
+        dateTime: selectedDate.copyWith(
+          hour: selectedTime.hour,
+          minute: selectedTime.minute,
+        ),
+      );
+      await fbservices.addEventToFireStore(event);
+      Navigator.pop(context);
+    } catch (exception) {
+      print(exception.toString());
+    }
+  }
 
   void selectdate() async
   {
