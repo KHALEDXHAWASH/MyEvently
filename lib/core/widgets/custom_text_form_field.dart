@@ -13,7 +13,7 @@ class CustomTextFormField extends StatelessWidget {
         this.controller,
       this.keyboardType = TextInputType.text,
       this.hint,
-      this.maxLines = 1});
+      this.maxLines = 1, this.validation});
 
   final String? label;
   final IconData? prefixIcon;
@@ -24,10 +24,12 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hint;
   final int maxLines;
+  final String? Function (String?)? validation;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator:validation ,
       controller:controller,
       maxLines: maxLines,
       style: GoogleFonts.inter(
