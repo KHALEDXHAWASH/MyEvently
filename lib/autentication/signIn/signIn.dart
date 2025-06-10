@@ -1,4 +1,6 @@
+import 'package:evently_c14_online_sun/core/extensions/emailvalidator.dart';
 import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
+import 'package:evently_c14_online_sun/core/routes_manager/routes_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_button.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_divider.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_elevated_button.dart';
@@ -17,6 +19,26 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   bool secure = true;
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,56 +51,84 @@ class _SignInState extends State<SignIn> {
               Expanded(child: Image.asset(ImageAssets.logo)),
               Expanded(
                 flex: 4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      height: 24.h,
-                    ),
-                    CustomTextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        label: AppLocalizations.of(context)!.email,
-                        prefixIcon: Icons.email_rounded),
-                    SizedBox(
-                      height: 16.h,
-                    ),
-                    CustomTextFormField(
-                      keyboardType: TextInputType.visiblePassword,
-                      isSecure: secure,
-                      label: AppLocalizations.of(context)!.password,
-                      prefixIcon: Icons.lock,
-                      suffixIcon:
-                          secure ? Icons.visibility_off : Icons.visibility,
-                      onPress: _onClick,
-                    ),
-                    CustomTextButton(
-                        title: AppLocalizations.of(context)!.forget_password,
-                        onPress: () {}),
-                    CustomElevatedButton(
-                        title: AppLocalizations.of(context)!.sign_in,
-                        onPress: () {}),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.dont_have_account,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        CustomTextButton(
-                            title: AppLocalizations.of(context)!.create_account,
-                            onPress: () {})
-                      ],
-                    ),
-                    CustomDivider(
-                      title: AppLocalizations.of(context)!.or,
-                    ),
-                    SizedBox(
-                      height: 32.h,
-                    ),
-                    CustomButton(
-                        title: AppLocalizations.of(context)!.login_with_google,
-                        onTap: () {})
-                  ],
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        height: 24.h,
+                      ),
+                      CustomTextFormField(
+                          controller: emailController,
+
+                          validation: (input) {
+                            if (input == null || input.trim().isEmpty) {
+                              return "Plz, enter email";
+                            }
+                            if (!input.isValidEmail) {
+                              return "Sorry, email bad format";
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.emailAddress,
+                          label: AppLocalizations.of(context)!.email,
+                          prefixIcon: Icons.email_rounded),
+                      SizedBox(
+                        height: 16.h,
+                      ),
+                      CustomTextFormField(
+                        validation: (input) {
+                          if (input == null || input.trim().isEmpty) {
+                            return "Plz, enter password";
+                          }
+                          if (input.length < 6) {
+                            return "Sorry, password should be at least 6 characters";
+                          }
+                        },
+                        controller: passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        isSecure: secure,
+                        label: AppLocalizations.of(context)!.password,
+                        prefixIcon: Icons.lock,
+                        suffixIcon:
+                            secure ? Icons.visibility_off : Icons.visibility,
+                        onPress: _onClick,
+                      ),
+                      CustomTextButton(
+                          title: AppLocalizations.of(context)!.forget_password,
+                          onPress: () {}),
+                      CustomElevatedButton(
+                          title: AppLocalizations.of(context)!.sign_in,
+                          onPress: _signin),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.dont_have_account,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          SizedBox(width: 10.w,),
+                          CustomTextButton(
+                              title: AppLocalizations.of(context)!.create_account,
+                              onPress: ()
+                              {
+                                Navigator.pushReplacementNamed(context, RoutesManager.signUp);
+                              })
+                        ],
+                      ),
+                      CustomDivider(
+                        title: AppLocalizations.of(context)!.or,
+                      ),
+                      SizedBox(
+                        height: 32.h,
+                      ),
+                      CustomButton(
+
+                          title: AppLocalizations.of(context)!.login_with_google,
+                          onTap: () {})
+                    ],
+                  ),
                 ),
               )
             ],
@@ -92,5 +142,13 @@ class _SignInState extends State<SignIn> {
     setState(() {
       secure = !secure;
     });
+  }
+
+  void _signin()
+  {
+    if (!(formKey.currentState!.validate()))
+    {
+      return;
+    }
   }
 }
