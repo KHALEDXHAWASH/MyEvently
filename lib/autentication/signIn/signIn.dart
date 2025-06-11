@@ -6,9 +6,13 @@ import 'package:evently_c14_online_sun/core/widgets/custom_divider.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_elevated_button.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_text_button.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_text_form_field.dart';
+import 'package:evently_c14_online_sun/fbservices/fbservices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../core/resources/diaglogs.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -21,7 +25,7 @@ class _SignInState extends State<SignIn> {
   bool secure = true;
   late TextEditingController emailController;
   late TextEditingController passwordController;
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -31,6 +35,7 @@ class _SignInState extends State<SignIn> {
     emailController = TextEditingController();
     passwordController = TextEditingController();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -38,7 +43,6 @@ class _SignInState extends State<SignIn> {
     emailController.dispose();
     passwordController.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,7 @@ class _SignInState extends State<SignIn> {
               Expanded(
                 flex: 4,
                 child: Form(
-                  key: formKey,
+                  key: formkey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -61,10 +65,9 @@ class _SignInState extends State<SignIn> {
                       ),
                       CustomTextFormField(
                           controller: emailController,
-
                           validation: (input) {
                             if (input == null || input.trim().isEmpty) {
-                              return "Plz, enter email";
+                              return "Please, enter your email";
                             }
                             if (!input.isValidEmail) {
                               return "Sorry, email bad format";
@@ -80,7 +83,7 @@ class _SignInState extends State<SignIn> {
                       CustomTextFormField(
                         validation: (input) {
                           if (input == null || input.trim().isEmpty) {
-                            return "Plz, enter password";
+                            return "Please, enter your password";
                           }
                           if (input.length < 6) {
                             return "Sorry, password should be at least 6 characters";
@@ -108,12 +111,15 @@ class _SignInState extends State<SignIn> {
                             AppLocalizations.of(context)!.dont_have_account,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
-                          SizedBox(width: 10.w,),
+                          SizedBox(
+                            width: 10.w,
+                          ),
                           CustomTextButton(
-                              title: AppLocalizations.of(context)!.create_account,
-                              onPress: ()
-                              {
-                                Navigator.pushReplacementNamed(context, RoutesManager.signUp);
+                              title:
+                                  AppLocalizations.of(context)!.create_account,
+                              onPress: () {
+                                Navigator.pushReplacementNamed(
+                                    context, RoutesManager.signUp);
                               })
                         ],
                       ),
@@ -124,8 +130,8 @@ class _SignInState extends State<SignIn> {
                         height: 32.h,
                       ),
                       CustomButton(
-
-                          title: AppLocalizations.of(context)!.login_with_google,
+                          title:
+                              AppLocalizations.of(context)!.login_with_google,
                           onTap: () {})
                     ],
                   ),
@@ -144,11 +150,35 @@ class _SignInState extends State<SignIn> {
     });
   }
 
-  void _signin()
+
+  void _signin() async
   {
-    if (!(formKey.currentState!.validate()))
+    if (!(formkey.currentState!.validate())) return;
+    try
     {
-      return;
+      DialogUtils.showLoadingDialog(context, message: "waiting...");
+      await fbservices.signin(
+          emailController.text, passwordController.text);
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          content: "User Logged-In", postTitle: "Ok", posAction: ()
+          {
+            Navigator.pushReplacementNamed(context, RoutesManager.mainLayout);
+          });
+    } on FirebaseAuthException catch (e)
+    {
+      DialogUtils.hideDialog(context);
+
+      if (e.code == "invalid-credential")
+      {
+        DialogUtils.showMessageDialog(context,
+            content: "Wrong Email or Password", postTitle: "try again");
+      }
+    } catch (e) {
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          content: e.toString(), postTitle: "Try again");
     }
   }
-}
+  }
+

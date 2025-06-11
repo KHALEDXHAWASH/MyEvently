@@ -1,5 +1,6 @@
 import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
 import 'package:evently_c14_online_sun/core/resources/colors_manager.dart';
+import 'package:evently_c14_online_sun/core/routes_manager/routes_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_drop_down_menu.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_profile_header_widget.dart';
 import 'package:evently_c14_online_sun/providers/config_provider.dart';
@@ -63,7 +64,9 @@ class _ProfileState extends State<Profile> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: ColorsManager.red,
                         foregroundColor: ColorsManager.white),
-                    onPressed: () {},
+                    onPressed: (){
+                      Navigator.pushReplacementNamed(context,RoutesManager.signIn);
+                    },
                     child: Row(
                       children: [
 

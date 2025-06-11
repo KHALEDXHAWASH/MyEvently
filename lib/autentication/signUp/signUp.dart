@@ -2,10 +2,13 @@ import 'package:evently_c14_online_sun/core/extensions/emailvalidator.dart';
 import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_elevated_button.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_text_form_field.dart';
+import 'package:evently_c14_online_sun/fbservices/fbservices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/resources/diaglogs.dart';
 import '../../core/routes_manager/routes_manager.dart';
 
 class SignUp extends StatefulWidget {
@@ -98,7 +101,7 @@ class _SignUpState extends State<SignUp> {
                       CustomTextFormField(
                         validation: (input) {
                           if (input == null || input.trim().isEmpty) {
-                            return "Plz, enter password";
+                            return "Please, enter password";
                           }
                           if (input.length < 6) {
                             return "Sorry, password at least 6 characters";
@@ -122,7 +125,7 @@ class _SignUpState extends State<SignUp> {
                         controller: repassController,
                         validation: (input) {
                           if (input == null || input.trim().isEmpty) {
-                            return "Plz, enter re-password";
+                            return "Please, enter re-password";
                           }
                           if (input != passwordController.text) {
                             return "password not match";
@@ -143,7 +146,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       CustomElevatedButton(
                           title: AppLocalizations.of(context)!.sign_up,
-                          onPress: signup),
+                          onPress: _signup),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -184,12 +187,34 @@ class _SignUpState extends State<SignUp> {
       secureRePassword = !secureRePassword;
     });
   }
-
-  void signup()
-  {
-    if (!(formkey.currentState!.validate()))
-    {
-      return;
+  void _signup() async {
+    if (!(formkey.currentState!.validate())) return;
+    try {
+      DialogUtils.showLoadingDialog(context, message: "Waiting...");
+      await fbservices.signUp(
+          emailController.text, passwordController.text);
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          content: "User Registered Successfully",
+          postTitle: "Ok", posAction: () {
+            Navigator.pushReplacementNamed(context, RoutesManager.signIn);
+          });
+    } on FirebaseAuthException catch (e) {
+      DialogUtils.hideDialog(context);
+      if (e.code =="weak-password") {
+        DialogUtils.showMessageDialog(context,
+            content: 'The password provided is too weak.',
+            postTitle: "try again");
+      } else if (e.code =="email-already-in-use") {
+        DialogUtils.showMessageDialog(context,
+            content: 'The account already exists for that email.',
+            postTitle: "try again");
+      }
+    } catch (e) {
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          content: e.toString(), postTitle: "try again");
     }
   }
 }
+

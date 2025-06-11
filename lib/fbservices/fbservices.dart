@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class fbservices
-{
+class fbservices {
   static CollectionReference<EventDM> getEventsCollection() {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference<EventDM> eventsCollection = db
         .collection("Events")
         .withConverter<EventDM>(
-      fromFirestore: (snapshot, _) => EventDM.fromJson(snapshot.data()!),
-      toFirestore: (event, _) => event.toJson(),
-    );
+          fromFirestore: (snapshot, _) => EventDM.fromJson(snapshot.data()!),
+          toFirestore: (event, _) => event.toJson(),
+        );
     return eventsCollection;
   }
 
@@ -20,8 +20,8 @@ class fbservices
     DocumentReference<EventDM> document = eventsCollection.doc();
     event.id = document.id;
     return document.set(event);
-
   }
+
   static Future<List<EventDM>> getEventsOnTimeRead(CategoryDM category) async {
     CollectionReference<EventDM> eventsCollection = getEventsCollection();
     QuerySnapshot querySnapshot = await eventsCollection
@@ -31,7 +31,7 @@ class fbservices
     List<EventDM> events = documentsSnapShot
         .map(
           (docSnapshot) => docSnapshot.data() as EventDM,
-    )
+        )
         .toList();
 
     return events;
@@ -42,16 +42,28 @@ class fbservices
     CollectionReference<EventDM> eventsCollection = getEventsCollection();
     var querySnapshotStream = eventsCollection
         .where("categoryId",
-        isEqualTo: selectedCategory.id == '0' ? null : selectedCategory.id)
+            isEqualTo: selectedCategory.id == '0' ? null : selectedCategory.id)
         .orderBy("date")
         .snapshots();
     var events = querySnapshotStream.map(
-          (querySnapshot) => querySnapshot.docs
+      (querySnapshot) => querySnapshot.docs
           .map(
             (docSnapshot) => docSnapshot.data(),
-      )
+          )
           .toList(),
     );
     yield* events;
+  }
+
+  static Future<void> signUp(String email, String password) async {
+    UserCredential credential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+  }
+  static Future<void> signin(String email, String password) async
+  {
+    UserCredential credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email:email.trim(),password:password );
   }
 }
