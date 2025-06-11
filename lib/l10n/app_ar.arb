@@ -36,5 +36,7 @@
   "add_event": "أضف فعالية",
   "event_details": "تفاصيل الفعالية",
   "update_event": "تحديث الفعالية",
-  "edit_event": "تعديل الفعالية"
+  "edit_event": "تعديل الفعالية",
+  "searchFavorites": "ابحث في المفضلة...",
+  "noFavoritesFound": "لا توجد فعاليات مفضلة."
 }

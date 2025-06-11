@@ -27,12 +27,15 @@ class _CreateEventState extends State<CreateEvent> {
   TimeOfDay selectedTime = TimeOfDay.now();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String descriptioninputtrim(String input) {
+  String descriptioninputtrim(String input)
+  {
     List<String> inputChars = input.split('');
     List<String> inputCharactersWithoutSpace = [];
 
-    for (int i = 0; i < inputChars.length; i++) {
-      if (inputChars[i].trim().isNotEmpty) {
+    for (int i = 0; i < inputChars.length; i++)
+    {
+      if (inputChars[i].trim().isNotEmpty)
+      {
         inputCharactersWithoutSpace.add(inputChars[i]);
       }
     }

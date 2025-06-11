@@ -1,6 +1,9 @@
 import 'package:evently_c14_online_sun/core/widgets/custom_event_widget.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../core/resources/colors_manager.dart';
 import '../../../fbservices/fbservices.dart';
 
 class Favourite extends StatefulWidget {
@@ -22,53 +25,40 @@ class _FavouriteState extends State<Favourite> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: REdgeInsets.all(12.0),
         child: Column(
           children: [
             TextField(
               onChanged: filterFavEventsBySearchKey,
-              style: const TextStyle(color: Colors.black),
+              style: textTheme.bodySmall,
+              cursorColor: ColorsManager.blue,
               decoration: InputDecoration(
-                hintText: 'Search favorites...',
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: const Icon(Icons.search, color: Colors.black),
-                filled: true,
-                fillColor: Colors.transparent,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide.none,
-                ),
+                hintText: AppLocalizations.of(context)!.searchFavorites,
+                prefixIcon: const Icon(Icons.search),
               ),
             ),
-            const SizedBox(height: 16),
-
+            SizedBox(height: 16.h),
             Expanded(
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : filteredEvents.isEmpty
-                  ? const Center(
+                  ? Center(
                 child: Text(
-                  'No favorite events found.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  AppLocalizations.of(context)!.noFavoritesFound,
+                  style: textTheme.bodySmall?.copyWith(color: Colors.grey),
                 ),
               )
                   : ListView.builder(
                 itemCount: filteredEvents.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
                     child: CustomEventWidget(
                       event: filteredEvents[index],
                       markAsFav: true,
@@ -83,22 +73,19 @@ class _FavouriteState extends State<Favourite> {
     );
   }
 
-  void getFavEvents() async
-  {
+  void getFavEvents() async {
     favEvents = await fbservices.getFavEvents();
     filteredEvents = favEvents;
     isLoading = false;
     setState(() {});
   }
 
-  void filterFavEventsBySearchKey(String searchKey)
-  {
+  void filterFavEventsBySearchKey(String searchKey) {
     if (searchKey.trim().isEmpty) {
       filteredEvents = favEvents;
     } else {
-      filteredEvents = favEvents.where((event)
-      {
-        final query = searchKey.toLowerCase().trim();
+      final query = searchKey.toLowerCase().trim();
+      filteredEvents = favEvents.where((event) {
         return event.title.toLowerCase().contains(query) ||
             event.description.toLowerCase().contains(query);
       }).toList();

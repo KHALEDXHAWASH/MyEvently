@@ -7,6 +7,7 @@ class ThemeManager {
   static final ThemeData light = ThemeData(
       useMaterial3: false,
       primaryColor: ColorsManager.blue,
+
       colorScheme: ColorScheme.fromSeed(
           seedColor: ColorsManager.blue,
           primary: ColorsManager.blue,

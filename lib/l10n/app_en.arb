@@ -17,7 +17,6 @@
 "map": "Map",
 "favourite": "favourite",
 "profile": "Profile",
-"home": "Home",
 "theme": "Theme",
 "language": "Language",
 "light": "light",
@@ -37,5 +36,7 @@
 "add_event": "Add Event",
 "event_details": "Event Details",
 "update_event": "Update Event",
-"edit_event": "Edit Event"
+"edit_event": "Edit Event",
+  "searchFavorites": "Search favorites...",
+  "noFavoritesFound": "No favorite events found."
 }
