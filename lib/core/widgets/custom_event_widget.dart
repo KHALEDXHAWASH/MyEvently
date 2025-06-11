@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomEventWidget extends StatelessWidget {
-  const CustomEventWidget({super.key, required this.event});
+  const CustomEventWidget(
+      {super.key, required this.event, required this.markAsFav});
 
   final EventDM event;
+  final bool markAsFav;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,9 @@ class CustomEventWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(width: 1.w, color: ColorsManager.blue),
         image: DecorationImage(
-            fit: BoxFit.fill, image: AssetImage(event.category.imagePath!)),
+            fit: BoxFit.fill,
+            image: AssetImage(
+                event.category.imagePath ?? ImageAssets.exhibition)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +35,8 @@ class CustomEventWidget extends StatelessWidget {
           ),
           const Spacer(),
           EventTitleWidget(
-            title: event.title,
+            event: event,
+            markAsFav: markAsFav,
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:evently_c14_online_sun/core/resources/constant_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_tab.dart';
 import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
 import 'package:flutter/material.dart';
@@ -6,19 +7,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar(
       {super.key,
-      required this.categories,
-      required this.selectedTabBg,
-      required this.unselectedTabBg,
-      required this.selectedLabelColor,
-      required this.unSelectedLabelColor,
-        required this.oncategorytabclick});
+        required this.categories,
+        required this.selectedTabBg,
+        required this.unselectedTabBg,
+        required this.selectedLabelColor,
+        required this.unSelectedLabelColor,
+        required this.onCategoryTabClicked});
 
   final List<CategoryDM> categories;
   final Color selectedTabBg;
   final Color unselectedTabBg;
   final Color selectedLabelColor;
   final Color unSelectedLabelColor;
-  final void Function(CategoryDM) oncategorytabclick;
+  final void Function(CategoryDM) onCategoryTabClicked;
 
   @override
   State<CustomTabBar> createState() => _CustomTabBarState();
@@ -39,24 +40,24 @@ class _CustomTabBarState extends State<CustomTabBar> {
           tabs: widget.categories
               .map(
                 (category) => CustomTab(
-                  selectedTabBg: widget.selectedTabBg,
-                  unselectedTabBg: widget.unselectedTabBg,
-                  selectedLabelColor: widget.selectedLabelColor,
-                  unSelectedLabelColor: widget.unSelectedLabelColor,
-                  category: category,
-                  isSelected:
-                      widget.categories.indexOf(category) == selectedTabIndex,
-                ),
-              )
+              selectedTabBg: widget.selectedTabBg,
+              unselectedTabBg: widget.unselectedTabBg,
+              selectedLabelColor: widget.selectedLabelColor,
+              unSelectedLabelColor: widget.unSelectedLabelColor,
+              category: category,
+              isSelected:
+              widget.categories.indexOf(category) == selectedTabIndex,
+            ),
+          )
               .toList()),
     );
   }
 
   void _onTabItemClicked(int newTabIndex) {
-    widget.oncategorytabclick(widget.categories[newTabIndex]);
+    //print(newTabIndex);
+    widget.onCategoryTabClicked(widget.categories[newTabIndex]);
     setState(() {
       selectedTabIndex = newTabIndex;
     });
   }
-
 }

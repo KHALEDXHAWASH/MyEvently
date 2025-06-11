@@ -1,35 +1,43 @@
-import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
 import 'package:evently_c14_online_sun/core/resources/constant_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_event_widget.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_tab_bar.dart';
 import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
-import 'package:evently_c14_online_sun/fbservices/fbservices.dart';
+import 'package:evently_c14_online_sun/data/data_model/userDM.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../fbservices/fbservices.dart';
+
 class Home extends StatefulWidget {
- const  Home({super.key});
+  const Home({super.key});
+
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  int selectedTabIndex = 0;
   CategoryDM selectedCategory = ConstantManager.categories[0];
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          padding: REdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(17.r)),
+          padding: REdgeInsets.symmetric(
+            horizontal: 16,
           ),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius:
+              BorderRadius.vertical(bottom: Radius.circular(16.r))),
           child: SafeArea(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -37,36 +45,36 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 Text(
-                  "king vamp",
+                  userDM.currentUser!.name,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(
+                  height: 8.h,
+                ),
                 Row(
                   children: [
                     const Icon(Icons.location_on_outlined),
                     Text(
-                      "Memphis, USA",
+                      "Cairo, Egypt",
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
                           ?.copyWith(fontWeight: FontWeight.w500),
-                    ),
+                    )
                   ],
                 ),
                 CustomTabBar(
-                  oncategorytabclick: (category) {
-                    setState(() {
+                    onCategoryTabClicked: (category) {
                       selectedCategory = category;
-                    });
-                  },
-                  categories: ConstantManager.categories,
-                  selectedTabBg: Theme.of(context).colorScheme.secondary,
-                  unselectedTabBg: Colors.transparent,
-                  selectedLabelColor:
-                  Theme.of(context).colorScheme.onSecondary,
-                  unSelectedLabelColor:
-                  Theme.of(context).colorScheme.secondaryContainer,
-                ),
+                      print(selectedCategory.id);
+                      setState(() {});
+                    },
+                    categories: ConstantManager.categories,
+                    selectedTabBg: Theme.of(context).colorScheme.secondary,
+                    unselectedTabBg: Colors.transparent,
+                    selectedLabelColor: Theme.of(context).colorScheme.onSecondary,
+                    unSelectedLabelColor:
+                    Theme.of(context).colorScheme.secondaryContainer)
               ],
             ),
           ),
@@ -88,7 +96,8 @@ class _HomeState extends State<Home> {
                 child: ListView.builder(
                   itemBuilder: (context, index) => CustomEventWidget(
                     event: events[index],
-
+                    markAsFav: userDM.currentUser!.favouriteEventsIds
+                        .contains(events[index].id),
                   ),
                   itemCount: events.length,
                 ));
@@ -99,7 +108,5 @@ class _HomeState extends State<Home> {
   }
 
 }
-
-
 
 /// i18n

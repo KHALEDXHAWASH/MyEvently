@@ -26,10 +26,6 @@ class _ProfileState extends State<Profile> {
 
       children: [
         const CustomProfileHeaderWidget(
-            
-
-            userName: "Muhammed Saad",
-            userAccount: " mSaad@gmail.com",
             userImage: ImageAssets.profileImage),
         Expanded(
           child: Padding(

@@ -187,30 +187,33 @@ class _SignUpState extends State<SignUp> {
       secureRePassword = !secureRePassword;
     });
   }
-  void _signup() async {
+  void _signup() async
+  {
     if (!(formkey.currentState!.validate())) return;
-    try {
+    try
+    {
       DialogUtils.showLoadingDialog(context, message: "Waiting...");
-      await fbservices.signUp(
-          emailController.text, passwordController.text);
+      await fbservices.signup(
+          emailController.text,passwordController.text,nameController.text);
       DialogUtils.hideDialog(context);
       DialogUtils.showMessageDialog(context,
           content: "User Registered Successfully",
-          postTitle: "Ok", posAction: () {
+          postTitle: "Ok", posAction: ()
+          {
             Navigator.pushReplacementNamed(context, RoutesManager.signIn);
           });
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e)
+    {
       DialogUtils.hideDialog(context);
-      if (e.code =="weak-password") {
-        DialogUtils.showMessageDialog(context,
-            content: 'The password provided is too weak.',
-            postTitle: "try again");
-      } else if (e.code =="email-already-in-use") {
-        DialogUtils.showMessageDialog(context,
-            content: 'The account already exists for that email.',
-            postTitle: "try again");
+      if (e.code =="weak-password")
+      {
+        DialogUtils.showMessageDialog(context, content: 'The password provided is weak.', postTitle: "try again");
+      } else if (e.code =="email-already-in-use")
+      {
+        DialogUtils.showMessageDialog(context, content: 'This account already registered.', postTitle: "try again");
       }
-    } catch (e) {
+    } catch (e)
+    {
       DialogUtils.hideDialog(context);
       DialogUtils.showMessageDialog(context,
           content: e.toString(), postTitle: "try again");

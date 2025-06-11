@@ -1,11 +1,22 @@
-import 'package:evently_c14_online_sun/core/resources/colors_manager.dart';
+import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class EventTitleWidget extends StatelessWidget {
-  const EventTitleWidget({super.key, required this.title});
+import '../../fbservices/fbservices.dart';
 
-  final String title;
+class EventTitleWidget extends StatefulWidget {
+  const EventTitleWidget(
+      {super.key, required this.event, required this.markAsFav});
+
+  final EventDM event;
+  final bool markAsFav;
+
+  @override
+  State<EventTitleWidget> createState() => _EventTitleWidgetState();
+}
+
+class _EventTitleWidgetState extends State<EventTitleWidget> {
+  late bool isFavouriteEvent = widget.markAsFav;
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +27,27 @@ class EventTitleWidget extends StatelessWidget {
           children: [
             Expanded(
                 child: Text(
-              title,
-              style: Theme.of(context).textTheme.bodySmall,
-            )),
-            const Icon(
-              Icons.favorite_border_rounded,
-              color: ColorsManager.blue,
-            )
+                  widget.event.title,
+                  style: Theme.of(context).textTheme.bodySmall,
+                )),
+            IconButton(
+                onPressed: _markEventAsFav,
+                icon: Icon(isFavouriteEvent
+                    ? Icons.favorite
+                    : Icons.favorite_border_outlined))
           ],
         ),
       ),
     );
+  }
+
+  void _markEventAsFav() async {
+    isFavouriteEvent = !isFavouriteEvent;
+    if (isFavouriteEvent) {
+      await fbservices.addEventToFav(widget.event.id);
+    } else {
+      await fbservices.removeEventFromFav(widget.event.id);
+    }
+    setState(() {});
   }
 }

@@ -79,7 +79,7 @@ class _CreateEventState extends State<CreateEvent> {
                     borderRadius: BorderRadius.circular(18.r),
                     child: Image.asset(selectedCategory.imagePath!)),
                 CustomTabBar(
-                  oncategorytabclick: oncategoryclick,
+                  onCategoryTabClicked: oncategoryclick,
                   categories: ConstantManager.categoriesWithoutAll,
                   selectedTabBg: ColorsManager.blue,
                   unselectedTabBg: Colors.transparent,
