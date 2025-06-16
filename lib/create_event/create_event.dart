@@ -1,6 +1,6 @@
-import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
 import 'package:evently_c14_online_sun/core/resources/colors_manager.dart';
 import 'package:evently_c14_online_sun/core/resources/constant_manager.dart';
+import 'package:evently_c14_online_sun/core/routes_manager/routes_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_elevated_button.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_text_form_field.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_tab_bar.dart';
@@ -9,6 +9,7 @@ import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../data/data_model/categoryDM.dart';
 import '../fbservices/fbservices.dart';
@@ -60,6 +61,7 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   CategoryDM selectedCategory = ConstantManager.categoriesWithoutAll[0];
+  LatLng? location;
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +153,20 @@ class _CreateEventState extends State<CreateEvent> {
                 CustomElevatedButton(
                     title: AppLocalizations.of(context)!.add_event,
                     onPress: _createevent)
+                ,CustomElevatedButton(
+                  title: location == null
+                      ? "Select Location"
+                      : "[${location?.latitude}, ${location?.longitude}]",
+                  onPress: () {
+                    Navigator.pushNamed(context, RoutesManager.selectLocation)
+                        .then(( value) {
+                      if (value != null) {
+                        location = value as LatLng;
+                        setState(() {});
+                      }
+                    });
+                  },
+                ),
               ],
             ),
           ),
@@ -176,8 +192,9 @@ class _CreateEventState extends State<CreateEvent> {
         description: descontroller.text,
         dateTime: selectedDate.copyWith(
           hour: selectedTime.hour,
-          minute: selectedTime.minute,
-        ),
+          minute: selectedTime.minute,),
+        lat:location?.latitude
+       , lng:location?.longitude
       );
       await fbservices.addEventToFireStore(event);
       Navigator.pop(context);
