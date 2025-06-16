@@ -6,6 +6,8 @@ import 'package:evently_c14_online_sun/core/widgets/custom_text_form_field.dart'
 import 'package:evently_c14_online_sun/core/widgets/custom_tab_bar.dart';
 import 'package:evently_c14_online_sun/core/widgets/event_appointment_widget.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
+import 'package:evently_c14_online_sun/data/data_model/userDM.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +17,8 @@ import '../data/data_model/categoryDM.dart';
 import '../fbservices/fbservices.dart';
 
 class CreateEvent extends StatefulWidget {
-  const CreateEvent({super.key});
+  const CreateEvent({super.key, this.event});
+  final EventDM? event;
 
   @override
   State<CreateEvent> createState() => _CreateEventState();
@@ -28,15 +31,12 @@ class _CreateEventState extends State<CreateEvent> {
   TimeOfDay selectedTime = TimeOfDay.now();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String descriptioninputtrim(String input)
-  {
+  String descriptioninputtrim(String input) {
     List<String> inputChars = input.split('');
     List<String> inputCharactersWithoutSpace = [];
 
-    for (int i = 0; i < inputChars.length; i++)
-    {
-      if (inputChars[i].trim().isNotEmpty)
-      {
+    for (int i = 0; i < inputChars.length; i++) {
+      if (inputChars[i].trim().isNotEmpty) {
         inputCharactersWithoutSpace.add(inputChars[i]);
       }
     }
@@ -46,15 +46,26 @@ class _CreateEventState extends State<CreateEvent> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     titlecontroller = TextEditingController();
     descontroller = TextEditingController();
+    _initEditData();
+  }
+
+  void _initEditData() {
+    if (widget.event != null) {
+      titlecontroller.text = widget.event!.title;
+      descontroller.text = widget.event!.description;
+      selectedCategory = widget.event!.category;
+      selectedDate = widget.event!.dateTime;
+      selectedTime = TimeOfDay(
+          hour: widget.event!.dateTime.hour,
+          minute: widget.event!.dateTime.minute);
+    }
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     titlecontroller.dispose();
     descontroller.dispose();
@@ -68,7 +79,8 @@ class _CreateEventState extends State<CreateEvent> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.create_event,
+          widget.event==null? "create event":"Edit details"
+
         ),
       ),
       body: Padding(
@@ -84,6 +96,7 @@ class _CreateEventState extends State<CreateEvent> {
                     borderRadius: BorderRadius.circular(18.r),
                     child: Image.asset(selectedCategory.imagePath!)),
                 CustomTabBar(
+                  index: ConstantManager.categories.indexOf(selectedCategory),
                   onCategoryTabClicked: oncategoryclick,
                   categories: ConstantManager.categoriesWithoutAll,
                   selectedTabBg: ColorsManager.blue,
@@ -139,27 +152,25 @@ class _CreateEventState extends State<CreateEvent> {
                     onPress: selectdate,
                     icon: Icons.date_range,
                     appointmentTitle:
-                        "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
                     buttonTitle: AppLocalizations.of(context)!.choose_date),
                 SizedBox(
                   height: 8.h,
                 ),
                 EventAppointmentWidget(
-                    onPress:_showEventTime,
+                    onPress: _showEventTime,
                     icon: Icons.access_time_rounded,
                     appointmentTitle:
-                        "${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}",
+                    "${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}",
                     buttonTitle: AppLocalizations.of(context)!.choose_time),
+                SizedBox(height: 14.h,),
                 CustomElevatedButton(
-                    title: AppLocalizations.of(context)!.add_event,
-                    onPress: _createevent)
-                ,CustomElevatedButton(
                   title: location == null
                       ? "Select Location"
                       : "[${location?.latitude}, ${location?.longitude}]",
                   onPress: () {
                     Navigator.pushNamed(context, RoutesManager.selectLocation)
-                        .then(( value) {
+                        .then((value) {
                       if (value != null) {
                         location = value as LatLng;
                         setState(() {});
@@ -167,6 +178,11 @@ class _CreateEventState extends State<CreateEvent> {
                     });
                   },
                 ),
+                SizedBox(height: 14.h,),
+
+                CustomElevatedButton(
+                    title:  widget.event==null?AppLocalizations.of(context)!.add_event:"Update event",
+                    onPress:widget.event==null?_createevent:_UpdateEvent)
               ],
             ),
           ),
@@ -180,28 +196,49 @@ class _CreateEventState extends State<CreateEvent> {
       selectedCategory = category;
     });
   }
+
   void _createevent() async {
-    if (!(formKey.currentState!.validate()))
-    {
+    if (!(formKey.currentState!.validate())) {
       return;
     }
     try {
       EventDM event = EventDM(
-        category: selectedCategory,
-        title: titlecontroller.text,
-        description: descontroller.text,
-        dateTime: selectedDate.copyWith(
-          hour: selectedTime.hour,
-          minute: selectedTime.minute,),
-        lat:location?.latitude
-       , lng:location?.longitude
-      );
+          userID: userDM.currentUser!.id,
+          category: selectedCategory,
+          title: titlecontroller.text,
+          description: descontroller.text,
+          dateTime: selectedDate.copyWith(
+            hour: selectedTime.hour,
+            minute: selectedTime.minute,
+          ),
+          lat: location?.latitude,
+          lng: location?.longitude);
       await fbservices.addEventToFireStore(event);
       Navigator.pop(context);
     } catch (exception) {
       print(exception.toString());
     }
   }
+  void _UpdateEvent() async {
+    EventDM event = EventDM(
+      userID: userDM.currentUser!.id,
+      id: widget.event!.id, // This is the key fix
+      category: selectedCategory,
+      title: titlecontroller.text,
+      description: descontroller.text,
+      dateTime: selectedDate.copyWith(
+        hour: selectedTime.hour,
+        minute: selectedTime.minute,
+      ),
+      lat: location?.latitude,
+      lng: location?.longitude,
+    );
+
+    await fbservices.updateEvent(event).then((value) {
+      Navigator.pushNamed(context,RoutesManager.mainLayout);
+    });
+  }
+
 
   void selectdate() async {
     selectedDate = await showDatePicker(

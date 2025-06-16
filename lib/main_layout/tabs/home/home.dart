@@ -1,4 +1,5 @@
 import 'package:evently_c14_online_sun/core/resources/constant_manager.dart';
+import 'package:evently_c14_online_sun/core/routes_manager/routes_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_event_widget.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_tab_bar.dart';
 import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
@@ -66,7 +67,7 @@ class _HomeState extends State<Home> {
                 CustomTabBar(
                     onCategoryTabClicked: (category) {
                       selectedCategory = category;
-                      print(selectedCategory.id);
+                   //   print(selectedCategory.id);
                       setState(() {});
                     },
                     categories: ConstantManager.categories,
@@ -94,10 +95,16 @@ class _HomeState extends State<Home> {
             List<EventDM> events = snapshot.data ?? [];
             return Expanded(
                 child: ListView.builder(
-                  itemBuilder: (context, index) => CustomEventWidget(
-                    event: events[index],
-                    markAsFav: userDM.currentUser!.favouriteEventsIds
-                        .contains(events[index].id),
+                  itemBuilder: (context, index) => InkWell(
+                    onTap: (){Navigator.pushNamed(context,RoutesManager.eventsDetails,arguments: events[index]
+                    );
+                    },
+
+                    child: CustomEventWidget(
+                      event: events[index],
+                      markAsFav: userDM.currentUser!.favouriteEventsIds
+                          .contains(events[index].id),
+                    ),
                   ),
                   itemCount: events.length,
                 ));

@@ -33,7 +33,7 @@ class EventsMapList extends StatelessWidget {
 
                 height: double.infinity,
                 width: double.infinity,
-                eventDM.category.imagePath ?? "assets/images/sports.jpg",
+                eventDM.category.imagePath!,
                 fit: BoxFit.fill,
               ),
             ),

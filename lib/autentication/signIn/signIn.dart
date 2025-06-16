@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/forget pass/forget_password.dart';
 import '../../core/resources/diaglogs.dart';
 
 class SignIn extends StatefulWidget {
@@ -100,7 +101,9 @@ class _SignInState extends State<SignIn> {
                       ),
                       CustomTextButton(
                           title: AppLocalizations.of(context)!.forget_password,
-                          onPress: () {}),
+                          onPress: () {
+                            Navigator.pushNamed(context,RoutesManager.forgetPassword);
+                          }),
                       CustomElevatedButton(
                           title: AppLocalizations.of(context)!.sign_in,
                           onPress: _signin),
@@ -132,7 +135,7 @@ class _SignInState extends State<SignIn> {
                       CustomButton(
                           title:
                               AppLocalizations.of(context)!.login_with_google,
-                          onTap: () {})
+                          onTap:_googlesignIn)
                     ],
                   ),
                 ),
@@ -180,5 +183,22 @@ class _SignInState extends State<SignIn> {
           content: e.toString(), postTitle: "Try again");
     }
   }
+  _googlesignIn() async {
+    try {
+      await fbservices.loginWithGoogle();
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          content: "User Logged-In", postTitle: "Ok", posAction:()
+          {
+            Navigator.pushReplacementNamed(context, RoutesManager.mainLayout);
+          });
+    } catch (e) {
+       DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context, content: e.toString(), postTitle: "Try again");
+    }
   }
+
+}
+
+
 

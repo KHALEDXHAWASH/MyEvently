@@ -3,6 +3,7 @@ import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
 import 'package:evently_c14_online_sun/data/data_model/userDM.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class fbservices {
   static CollectionReference<EventDM> getEventsCollection() {
@@ -138,4 +139,31 @@ class fbservices {
     userDM user = await getUserFromFireStore(credential.user!.uid);
     userDM.currentUser = user;
   }
+  static Future<void> loginWithGoogle() async {
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  if (googleUser == null) return;
+
+// Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+// Create a new credential
+  final OAuthCredential credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+    );
+
+// Once signed in, return the UserCredential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+  static Future<void> updateEvent(EventDM event) async {
+    CollectionReference<EventDM> eventsCollection = getEventsCollection();
+    DocumentReference<EventDM> document = eventsCollection.doc(event.id);
+    await document.update(event.toJson());
+  }
+  static Future<void> DeleteEvent(EventDM event) async {
+    CollectionReference<EventDM> eventsCollection = getEventsCollection();
+    DocumentReference<EventDM> document = eventsCollection.doc(event.id);
+    await document.delete();
+  }
+
 }

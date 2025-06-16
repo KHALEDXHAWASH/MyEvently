@@ -11,6 +11,7 @@ class EventDM
   final DateTime dateTime;
   final double? lat;
   final double? lng;
+  final String userID;
 
   EventDM(
       {
@@ -20,7 +21,10 @@ class EventDM
     required this.category,
     required this.dateTime,
     this.lat=0.0,
-    this.lng=0.0});
+    this.lng=0.0,
+        required this.userID
+      }
+     );
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -30,6 +34,7 @@ class EventDM
     "date": Timestamp.fromDate(dateTime),
     "lat": lat,
     "lng": lng,
+    "userID": userID,
   };
 
   EventDM.fromJson(Map<String, dynamic> json)
@@ -40,6 +45,7 @@ class EventDM
     category: ConstantManager.categoriesWithoutAll.firstWhere(
           (category) => category.id == json["categoryId"],
     ),
+    userID: json["userID"],
     dateTime: (json["date"] as Timestamp).toDate(),
     lat: json["lat"]??0.0,
     lng: json["lng"]?? 0.0,

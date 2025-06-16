@@ -12,7 +12,9 @@ class CustomTabBar extends StatefulWidget {
         required this.unselectedTabBg,
         required this.selectedLabelColor,
         required this.unSelectedLabelColor,
-        required this.onCategoryTabClicked});
+        required this.onCategoryTabClicked,
+        this.index=0
+      });
 
   final List<CategoryDM> categories;
   final Color selectedTabBg;
@@ -20,13 +22,21 @@ class CustomTabBar extends StatefulWidget {
   final Color selectedLabelColor;
   final Color unSelectedLabelColor;
   final void Function(CategoryDM) onCategoryTabClicked;
+  final int index;
 
   @override
   State<CustomTabBar> createState() => _CustomTabBarState();
 }
 
+
 class _CustomTabBarState extends State<CustomTabBar> {
   int selectedTabIndex = 0;
+  @override
+  void initState() {
+    selectedTabIndex=widget.index;
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
