@@ -7,6 +7,7 @@ class ThemeManager {
   static final ThemeData light = ThemeData(
       useMaterial3: false,
       primaryColor: ColorsManager.blue,
+
       colorScheme: ColorScheme.fromSeed(
           seedColor: ColorsManager.blue,
           primary: ColorsManager.blue,
@@ -141,13 +142,14 @@ class ThemeManager {
 
   static final ThemeData dark = ThemeData(
       useMaterial3: false,
-      primaryColor: ColorsManager.black10,
+      primaryColor: ColorsManager.blue,
       colorScheme: ColorScheme.fromSeed(
           seedColor: ColorsManager.blue,
           primary: ColorsManager.blue,
           secondary: ColorsManager.white,
           onSecondary: ColorsManager.blue,
           secondaryContainer: ColorsManager.white),
+
       appBarTheme: AppBarTheme(
           centerTitle: true,
           backgroundColor: ColorsManager.black10,

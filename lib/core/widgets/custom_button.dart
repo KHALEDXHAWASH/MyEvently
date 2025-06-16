@@ -30,7 +30,7 @@ class CustomButton extends StatelessWidget {
             ),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style:TextStyle(color:ColorsManager.blue , fontWeight: FontWeight.bold, fontSize: 20)
             )
           ],
         ),

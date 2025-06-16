@@ -1,16 +1,17 @@
 import 'package:evently_c14_online_sun/core/resources/colors_manager.dart';
+import 'package:evently_c14_online_sun/data/data_model/userDM.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomProfileHeaderWidget extends StatelessWidget {
   const CustomProfileHeaderWidget(
       {super.key,
-      required this.userName,
-      required this.userAccount,
+       this.userName,
+       this.userAccount,
       required this.userImage});
 
-  final String userName;
-  final String userAccount;
+  final String? userName;
+  final String? userAccount;
   final String userImage;
 
   @override
@@ -34,14 +35,14 @@ class CustomProfileHeaderWidget extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      userName,
+                      userDM.currentUser!.name,
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     SizedBox(
                       height: 4.h,
                     ),
                     Text(
-                      userAccount,
+                      userDM.currentUser!.email,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],

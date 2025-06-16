@@ -1,6 +1,4 @@
-import 'package:evently_c14_online_sun/core/resources/colors_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField(
@@ -13,7 +11,7 @@ class CustomTextFormField extends StatelessWidget {
         this.controller,
       this.keyboardType = TextInputType.text,
       this.hint,
-      this.maxLines = 1});
+      this.maxLines = 1, this.validation});
 
   final String? label;
   final IconData? prefixIcon;
@@ -24,17 +22,15 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hint;
   final int maxLines;
+  final String? Function (String?)? validation;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator:validation ,
       controller:controller,
       maxLines: maxLines,
-      style: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: ColorsManager.black1C),
-      cursorColor: ColorsManager.grey,
+      style: Theme.of(context).textTheme.displayMedium,
       keyboardType: keyboardType,
       obscureText: isSecure,
       decoration: InputDecoration(

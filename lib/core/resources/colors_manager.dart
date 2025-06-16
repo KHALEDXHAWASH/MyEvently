@@ -10,4 +10,6 @@ class ColorsManager {
   static const Color black10 = Color(0xFF101127);
   static const Color black = Color(0xFF000000);
   static const Color ofWhite = Color(0xFFF4EBDC);
+  static const Color purple = Color(0xFF7025d9);
+
 }

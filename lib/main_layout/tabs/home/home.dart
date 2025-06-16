@@ -1,12 +1,16 @@
-import 'package:evently_c14_online_sun/core/resources/assets_manager.dart';
 import 'package:evently_c14_online_sun/core/resources/constant_manager.dart';
+import 'package:evently_c14_online_sun/core/routes_manager/routes_manager.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_event_widget.dart';
 import 'package:evently_c14_online_sun/core/widgets/custom_tab_bar.dart';
 import 'package:evently_c14_online_sun/data/data_model/categoryDM.dart';
 import 'package:evently_c14_online_sun/data/data_model/event_DM.dart';
+import 'package:evently_c14_online_sun/data/data_model/userDM.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../fbservices/fbservices.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,12 +21,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int selectedTabIndex = 0;
+  CategoryDM selectedCategory = ConstantManager.categories[0];
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         Container(
           padding: REdgeInsets.symmetric(
             horizontal: 16,
@@ -30,7 +35,7 @@ class _HomeState extends State<Home> {
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(17.r))),
+              BorderRadius.vertical(bottom: Radius.circular(16.r))),
           child: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +46,7 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 Text(
-                  "Muhammed Saad",
+                  userDM.currentUser!.name,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(
@@ -60,38 +65,55 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 CustomTabBar(
-                    oncategorytabclick: (CategoryDM category)
-                    {
-                      setState(() {
-
-                      });
+                    onCategoryTabClicked: (category) {
+                      selectedCategory = category;
+                   //   print(selectedCategory.id);
+                      setState(() {});
                     },
                     categories: ConstantManager.categories,
                     selectedTabBg: Theme.of(context).colorScheme.secondary,
                     unselectedTabBg: Colors.transparent,
                     selectedLabelColor: Theme.of(context).colorScheme.onSecondary,
                     unSelectedLabelColor:
-                        Theme.of(context).colorScheme.secondaryContainer)
+                    Theme.of(context).colorScheme.secondaryContainer)
               ],
             ),
           ),
         ),
-        // Expanded(
-        //     child: ListView.builder(
-        //   itemBuilder: (context, index) => CustomEventWidget(
-        //     event: EventDM(
-        //         title: "Meeting for Updating The Development Method ",
-        //         description: "Meeting for Updating The Development Method ",
-        //        // category: selectedCategory,
-        //         imagePath: ImageAssets.meeting,
-        //         dateTime: DateTime.now(),
-        //         ),
-        //   ),
-        //   itemCount: 20,
-        // ))
+
+        StreamBuilder(
+          stream: fbservices.getEventsRealTimeUpdates(selectedCategory),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasError) {
+              return const Text("Error");
+            }
+            List<EventDM> events = snapshot.data ?? [];
+            return Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) => InkWell(
+                    onTap: (){Navigator.pushNamed(context,RoutesManager.eventsDetails,arguments: events[index]
+                    );
+                    },
+
+                    child: CustomEventWidget(
+                      event: events[index],
+                      markAsFav: userDM.currentUser!.favouriteEventsIds
+                          .contains(events[index].id),
+                    ),
+                  ),
+                  itemCount: events.length,
+                ));
+          },
+        )
       ],
     );
   }
+
 }
 
 /// i18n
