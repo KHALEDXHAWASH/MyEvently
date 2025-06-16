@@ -50,14 +50,15 @@ class EventsMapList extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     eventDM.description,
-                    style: Theme.of(context).textTheme.labelMedium,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                   Text(
+
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     "${eventDM.lat} ${eventDM.lng}",
 
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                 ],
               ),

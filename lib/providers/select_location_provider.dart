@@ -1,55 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class SelectLocationProvider extends ChangeNotifier {
-  CameraPosition mylocation = CameraPosition(
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    zoom: 15,
-  );
+class SelectLocationProvider extends ChangeNotifier
+{
+  CameraPosition mylocation=CameraPosition(
 
-  Set<Marker> Markers = {};
-
-  late GoogleMapController controller;
-
-  SelectLocationProvider() {
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      zoom: 19.151926040649414);
+  Set<Marker> Markers = {
+    Marker(
+      markerId: const MarkerId('1'),
+      position: const LatLng(37.43296265531129, -122.08832357078792),
+      infoWindow: const InfoWindow(title: 'hello'),
+    ),
+  };
+  Set<Circle> Circles = {
+    Circle(
+      circleId: const CircleId('11'),
+      center: const LatLng(37.43296265331129, -122.08832357078792),
+      radius: 100,
+      strokeWidth: 2,
+      strokeColor: Colors.red,
+      fillColor: Colors.red.withOpacity(0.7),
+    ),
+  };
+  late GoogleMapController controller ;
+  goToMyLocation(LatLng location)
+  {
+    controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target:LatLng(location.latitude,location.longitude),zoom: 19.151926040649414)
+        )
+    );
     Markers = {
       Marker(
-        markerId: const MarkerId('myLocation'),
-        position: mylocation.target,
-        infoWindow: const InfoWindow(title: 'My Location'),
+        markerId:  MarkerId('1'),
+        position:  LatLng(location.latitude, location.longitude),
+        infoWindow:  InfoWindow(title: 'hello'),
       ),
+
     };
   }
-
-  goToMyLocation(LatLng location) {
-    controller.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: location, zoom: 15),
-      ),
-    );
-  }
-
-  LatLng? selectedLocation;
-
+  LatLng ? selectedLocation;
   changeSelectedLocation(LatLng location) {
     selectedLocation = location;
-
-    Markers = {
-      // My Location Marker
-      Marker(
-        markerId: const MarkerId('myLocation'),
-        position: mylocation.target,
-        infoWindow: const InfoWindow(title: 'My Location'),
-      ),
-      // Event Location Marker
-      Marker(
-        markerId: const MarkerId('eventLocation'),
-        position: location,
-        infoWindow: const InfoWindow(title: 'Event Location'),
-      ),
-    };
-
     goToMyLocation(location);
     notifyListeners();
   }
+
 }
